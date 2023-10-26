@@ -56,7 +56,36 @@ class Scanner:
 			case '"': self.__string()
 
 			case _:
-				Lox.error(self.line, "Unexpected character.")
+				if (self.__isDigit(c)): self.__number()
+				else: Lox.error(self.line, "Unexpected character.")
+
+	def __number(self):
+		while self.__isDigit(self.__peek()): self.__advance()
+
+		# Look for the fractional part
+		if self.__peek() == '.' and self.__isDigit(self.__peekNext()):
+			# Go over the '.'
+			self.__advance()
+
+			while self.__isDigit(self.__peek()): self.__advance()
+
+		self.__addToken(TokenType.NUMBER, float(self.__source[self.start, self.current]))
+
+	def __string(self):
+		while p:=self.__peek() != '"' and not self.__isAtEnd():
+			if p == '\\n': self.line += 1
+			self.__advance()
+
+		if self.__isAtEnd():
+			Lox.error(self.line, "Unterminated string.")
+			return
+		
+		# The closing "
+		self.__advance()
+
+		# Trim the quotes and add the token
+		value: str = self.__source[self.start+1, self.current-1]
+		self.__addToken(TokenType.STRING, value)
 
 	def __isAtEnd(self) -> bool:
 		return self.current >= len(self.__source)
@@ -82,20 +111,12 @@ class Scanner:
 	def __peek(self) -> chr:
 		if self.__isAtEnd(): return '\0'
 		return self.__source[self.current]
+	
+	def __peekNext(self) -> chr:
+		if self.current + 1 >= len(self.__source): return '\\0'
+		return self.__source[self.current + 1]
 
-	def __string(self):
-		while p:=self.__peek() != '"' and not self.__isAtEnd():
-			if p == '\\n': self.line += 1
-			self.__advance()
+	def __isDigit(c: chr) -> bool:
+		return c >= '0' and c <= '9'
 
-		if self.__isAtEnd():
-			Lox.error(self.line, "Unterminated string.")
-			return
-		
-		# The closing "
-		self.__advance()
-
-		# Trim the quotes and add the token
-		value: str = self.__source[self.start+1, self.current-1]
-		self.__addToken(TokenType.STRING, value)
 
