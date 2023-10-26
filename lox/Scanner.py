@@ -1,8 +1,10 @@
 from TokenType import TokenType
 from Token import Token
-from Lox import Lox
+from Errors import Errors
+
 class Scanner:
 	def __init__(self, source: str) -> None:
+		self.errors = Errors()
 		self.__source = source
 		self.__tokens: list[Token] = []
 
@@ -31,7 +33,7 @@ class Scanner:
 
 	def scanTokens(self) -> list[Token]:
 		while (not self.__isAtEnd()):
-			start = self.__current
+			self.__start = self.__current
 			self.__scanToken()
 
 		self.__tokens.append(Token(TokenType.EOF, "", None, self.__line))
@@ -66,8 +68,8 @@ class Scanner:
 				else: self.__addToken(TokenType.SLASH)
 
 			# Useless characters
-			case ' ' | '\\r' | '\\t': None
-			case '\\n':
+			case ' ' | '\r' | '\t': None
+			case '\n':
 				self.__line += 1
 
 			# Literals
@@ -76,14 +78,14 @@ class Scanner:
 			case _:
 				if self.__isDigit(c): self.__number()
 				elif self.__isAlpha(c): self.__identifier()
-				else: Lox.error(self.__line, "Unexpected character.")
+				else: self.errors.error(self.__line, "Unexpected character.")
 
 	def __identifier(self):
 		while self.__isAlphaNumeric(self.__peek()): self.__advance()
 
-		text: str = self.__source[self.__start, self.__current]
-		tType: TokenType = self.__keywords[text]
-		if not tType: tType = TokenType.IDENTIFIER
+		text: str = self.__source[self.__start:self.__current]
+		if text in self.__keywords: tType: TokenType = self.__keywords[text]
+		else: tType = TokenType.IDENTIFIER
 
 		self.__addToken(tType)
 
@@ -97,22 +99,22 @@ class Scanner:
 
 			while self.__isDigit(self.__peek()): self.__advance()
 
-		self.__addToken(TokenType.NUMBER, float(self.__source[self.__start, self.__current]))
+		self.__addToken(TokenType.NUMBER, float(self.__source[self.__start:self.__current]))
 
 	def __string(self):
 		while p:=self.__peek() != '"' and not self.__isAtEnd():
-			if p == '\\n': self.__line += 1
+			if p == '\n': self.__line += 1
 			self.__advance()
 
 		if self.__isAtEnd():
-			Lox.error(self.__line, "Unterminated string.")
+			self.errors.error(self.__line, "Unterminated string.")
 			return
 		
 		# The closing "
 		self.__advance()
 
 		# Trim the quotes and add the token
-		value: str = self.__source[self.__start+1, self.__current-1]
+		value: str = self.__source[self.__start+1:self.__current-1]
 		self.__addToken(TokenType.STRING, value)
 
 	def __isAtEnd(self) -> bool:
@@ -122,11 +124,8 @@ class Scanner:
 		self.__current += 1
 		return self.__source[self.__current-1]
 
-	def __addToken(self, tType: TokenType):
-		self.__addToken(self, tType, None)
-
-	def __addToken(self, tType: TokenType, literal: object):
-		text: str = self.__source[self.__start, self.__current]
+	def __addToken(self, tType: TokenType, literal: object=None):
+		text: str = self.__source[self.__start:self.__current]
 		self.__tokens.append(Token(tType, text, literal, self.__line))
 
 	def __match(self, expected: chr) -> bool:
@@ -141,7 +140,7 @@ class Scanner:
 		return self.__source[self.__current]
 	
 	def __peekNext(self) -> chr:
-		if self.__current + 1 >= len(self.__source): return '\\0'
+		if self.__current + 1 >= len(self.__source): return '\0'
 		return self.__source[self.__current + 1]
 
 	def __isDigit(self, c: chr) -> bool:

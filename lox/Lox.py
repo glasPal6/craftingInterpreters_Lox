@@ -4,6 +4,7 @@ from Scanner import Scanner
 class Lox:
 	def __init__(self) -> None:
 		self.hadError = False
+		self.scanner = None
 
 	def main(self, args: list[str]):
 		try:
@@ -19,10 +20,10 @@ class Lox:
 
 	def runFile(self, path: str):
 		with open(path, 'r') as file:
-			self.run(file)
+			self.run(file.read())
 
 			# Indicate an error has occured
-			if self.hadError: exit(65)
+			if self.scanner.errors.hadError: exit(65)
 
 	def runPrompt(self):
 		command = ""
@@ -30,25 +31,17 @@ class Lox:
 			line = input("> ")
 			if not line: break
 			self.run(line)
-			self.hadError = False
+			self.scanne.errors.hadError = False
 
 	def run(self, source: str):
-		scanner = Scanner(source)
-		tokens = scanner.scanTokens()
+		self.scanner = Scanner(source)
+		tokens = self.scanner.scanTokens()
 
 		# Just print the tokens for now
 		for t in tokens:
 			print(t)
 
-	def error(self, line: int, message: str):
-		self.__report(line, "", message)
-
-	def __report(self, line: int, where: str, message: str):
-		print("Error:")
-		print(f"[line {line}] Error {where}: {message}")
-		self.hadError = True
-
-
 if __name__ == "__main__":
 	interpreter = Lox()
-	interpreter.main(sys.argv[1:])
+	# interpreter.main(sys.argv[1:])
+	interpreter.main(["test.txt"])

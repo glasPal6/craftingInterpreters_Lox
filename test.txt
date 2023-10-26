@@ -1,0 +1,8 @@
+
+var temp = 12.50
+if (true) {
+	temp = temp + 12
+} else {
+	temp = temp - 12
+}
+print temp
