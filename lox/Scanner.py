@@ -48,6 +48,12 @@ class Scanner:
 				else: self.__addToken(TokenType.SLASH)
 
 			# Useless characters
+			case ' ' | '\\r' | '\\t': None
+			case '\\n':
+				self.line += 1
+
+			# Literals
+			case '"': self.__string()
 
 			case _:
 				Lox.error(self.line, "Unexpected character.")
@@ -76,3 +82,20 @@ class Scanner:
 	def __peek(self) -> chr:
 		if self.__isAtEnd(): return '\0'
 		return self.__source[self.current]
+
+	def __string(self):
+		while p:=self.__peek() != '"' and not self.__isAtEnd():
+			if p == '\\n': self.line += 1
+			self.__advance()
+
+		if self.__isAtEnd():
+			Lox.error(self.line, "Unterminated string.")
+			return
+		
+		# The closing "
+		self.__advance()
+
+		# Trim the quotes and add the token
+		value: str = self.__source[self.start+1, self.current-1]
+		self.__addToken(TokenType.STRING, value)
+
