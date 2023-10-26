@@ -1,4 +1,5 @@
 import sys
+from Scanner import Scanner
 
 class Lox:
 	def __init__(self) -> None:
