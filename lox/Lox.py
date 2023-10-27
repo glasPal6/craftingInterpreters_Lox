@@ -39,7 +39,7 @@ class Lox:
 
 		# Just print the tokens for now
 		for t in tokens:
-			print(t)
+			print(t.toString())
 
 if __name__ == "__main__":
 	interpreter = Lox()

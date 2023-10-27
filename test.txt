@@ -1,6 +1,6 @@
 
 var temp = 12.50
-if (true) {
+if (temp < 20) {
 	temp = temp + 12
 } else {
 	temp = temp - 12

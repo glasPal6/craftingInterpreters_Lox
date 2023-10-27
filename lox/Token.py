@@ -8,4 +8,4 @@ class Token:
 		self.line = line	
 
 	def toString(self) -> str:
-		return f"{self.type} {self.lexme} {self.literal}"
+		return f"{self.type} {self.lexeme} {self.literal}"
