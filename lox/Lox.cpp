@@ -5,7 +5,7 @@
 
 static void run(std::string source) {
     // TODO
-    std::cout << "This is a test!" << std::endl;
+    std::cout << "This is a test:" << source << std::endl;
 }
 
 static void runFile(std::string path) {
