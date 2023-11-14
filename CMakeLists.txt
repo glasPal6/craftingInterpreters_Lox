@@ -7,7 +7,7 @@ set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
 
 set(TARGET_NAME slowInterpreter)
 add_executable(${TARGET_NAME} 
-	lox/Lox.cpp
+	lox/main.cpp
 )
 
 target_compile_options(${TARGET_NAME} PUBLIC -Wall -Wextra -Wpedantic -Werror)

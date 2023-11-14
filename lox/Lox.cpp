@@ -3,9 +3,31 @@
 #include <fstream>
 #include <vector>
 
+#define SCANNER_IMPLEMENTATION
+#include "Scanner.h"
+// #include "Token.h"
+
 static void run(std::string source) {
-    // TODO
-    std::cout << "This is a test:" << source << std::endl;
+    std::cout << "This is yet to come!!!" << source << std::endl;
+
+    // Scanner scanner = new Scanner(source);
+    // Token[] tokens = scanner.scanTokens();
+
+    // // Just print the tokens now
+    // for (Token token : tokens) {
+    //     std::cout << token.toString() << std::endl;
+    // }
+}
+
+static void error(int line, std::string message) {
+    report(line, "", message);
+}
+
+static void report(int line, std::string where, std::string message) {
+    perror(
+        "[line " + (line) //+ "] Error " + where + ": " + message
+    );
+    hadError = true;
 }
 
 static void runFile(std::string path) {
