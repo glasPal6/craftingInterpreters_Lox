@@ -1,0 +1,12 @@
+#ifndef SCANNER_H
+#define SCANNER_H
+
+
+
+#endif // SCANNER_H
+
+#ifdef SCANNER_IMPLEMENTATION
+
+
+#endif // SCANNER_IMPLEMENTATION
+
