@@ -4,55 +4,70 @@
     #include <iostream>
     #include <string>
     #include <fstream>
-    #include <vector>
 
     #define SCANNER_IMPLEMENTATION
     #include "Scanner.h"
     // #include "Token.h"
 
     class Lox
-    {
+    {   
+        // #define LOX_IMPLEMENTATION
         private:
-            bool hasError = false; 
+            static bool hadError; 
+
+            void runPrompt();
+            void runFile(std::string path);
+            void run(std::string source);
+
+            void error(int line, std::string message);
+            void report(int line, std::string where, std::string message);
+
         public:
-            int main(int argc, char* argv[]);
+            static int main(int argc, char* argv[]);
 
-            static void runPrompt();
-            static void runFile(std::string path);
-            static void run(std::string source);
-
-            static void error(int line, std::string message);
-            static void report(int line, std::string where, std::string message);
     };
     
 #endif //LOX_H
 
 #ifdef LOX_IMPLEMENTATION
 
-    static void Lox::run(std::string source) {
-        std::cout << "This is yet to come!!!" << source << std::endl;
+    bool Lox::hadError = false;
 
-        // Scanner scanner = new Scanner(source);
-        // Token[] tokens = scanner.scanTokens();
+    int Lox::main(int argc, char* argv[]){
+        try {
+            if (argc > 2) {
+                std::cout << "Usage: slowInterpreter [script]" << std::endl;
+                return 64;
+            } else if (argc == 2) {
+                Lox lox; lox.runFile(argv[1]);
+            } else {
+                Lox lox; lox.runPrompt();
+            }
+        } catch (const std::exception& e) {
+            std::cout << "Error: " << e.what() << std::endl;
+        }
 
-        // // Just print the tokens now
-        // for (Token token : tokens) {
-        //     std::cout << token.toString() << std::endl;
-        // }
+        return 0;
     }
 
-    static void Lox::error(int line, std::string message) {
-        report(line, "", message);
+    void Lox::runPrompt() {
+        while (true) {
+            try {
+                std::string line;
+                std::cout << "> ";
+                std::getline(std::cin, line);
+                
+                if (line.empty()) return;
+
+                run(line);
+                Lox::hadError = false;
+            } catch (const std::exception& e) {
+                throw;
+            }
+        }
     }
 
-    static void Lox::report(int line, std::string where, std::string message) {
-        perror(
-            "[line " + (line) //+ "] Error " + where + ": " + message
-        );
-        hadError = true;
-    }
-
-    static void Lox::runFile(std::string path) {
+    void Lox::runFile(std::string path) {
         // Read in the raw file
         std::ifstream bytes (path);
         if (!bytes) throw std::runtime_error("Could not open the file");
@@ -63,39 +78,31 @@
         );
 
         run(file);
+        if (Lox::hadError) return;
     }
 
-    static void Lox::runPrompt() {
-        while (true) {
-            try {
-                std::string line;
-                std::cout << "> ";
-                std::getline(std::cin, line);
-                
-                if (line.empty()) return;
+    void Lox::run(std::string source) {
+        std::cout << "This is yet to come!!!\n" << source << std::endl;
 
-                run(line);
-            } catch (const std::exception& e) {
-                throw;
-            }
-        }
+        // Scanner scanner = new Scanner(source);
+        // Token[] tokens = scanner.scanTokens();
+
+        // // Just print the tokens now
+        // for (Token token : tokens) {
+        //     std::cout << token.toString() << std::endl;
+        // }
+
+        if (hadError) return;
     }
 
-    int Lox::main(int argc, char* argv[]){
-        try {
-            if (argc > 2) {
-                std::cout << "Usage: slowInterpreter [script]" << std::endl;
-                return 64;
-            } else if (argc == 2) {
-                runFile(argv[1]);
-            } else {
-                runPrompt();
-            }
-        } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << std::endl;
-        }
+    void Lox::error(int line, std::string message) {
+        report(line, "", message);
+    }
 
-        return 0;
+    void Lox::report(int line, std::string where, std::string message) {
+        // perror("[line " + std::to_string(line) + "] error " + where + ": " + message);
+        std::cout << ("[line " + std::to_string(line) + "] error " + where + ": " + message) << std::endl;
+        Lox::hadError = true;
     }
 
 #endif // LOX_IMPLEMENTATION

@@ -1,0 +1,7 @@
+var temp = 12;
+
+if (temp < 42) {
+	print "Less than 42";
+} else {
+	print "Greater than or equal to 42";
+}
