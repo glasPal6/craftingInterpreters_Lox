@@ -11,7 +11,6 @@
 
     class Lox
     {   
-        // #define LOX_IMPLEMENTATION
         private:
             static bool hadError; 
 
@@ -82,15 +81,13 @@
     }
 
     void Lox::run(std::string source) {
-        std::cout << "This is yet to come!!!\n" << source << std::endl;
+        Scanner scanner(source);
+        std::vector<Token> tokens = scanner.scanTokens();
 
-        // Scanner scanner = new Scanner(source);
-        // Token[] tokens = scanner.scanTokens();
-
-        // // Just print the tokens now
-        // for (Token token : tokens) {
-        //     std::cout << token.toString() << std::endl;
-        // }
+        // Just print the tokens now
+        for (Token token : tokens) {
+            std::cout << token.toString() << std::endl;
+        }
 
         if (hadError) return;
     }

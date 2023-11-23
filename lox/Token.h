@@ -40,6 +40,25 @@
 	struct Literal {
 		Literal_tag type;
 		Literal_value value;
+
+		Literal() {
+			type = NOTHING;
+			value.i = 0;
+		}
+	
+		Literal(Literal_tag tag, Literal_value val) {
+			type = tag;
+			switch (tag) {
+				case STR:
+					std::copy(std::begin(val.s), std::end(val.s), std::begin(value.s));
+					break;
+				case NUM:
+					value.i = val.i;
+					break;
+				default:
+					value.i = 0;
+			}
+		}
 	};
 
 	class Token
@@ -63,18 +82,7 @@
 	Token::Token(TokenType type, std::string lexeme, Literal literal, int line) {
 		this->type = type;
 		this->lexeme = lexeme;
-		this->literal.type = literal.type;
-		switch (literal.type) {
-			case STR:
-				std::copy(std::begin(literal.value.s), std::end(literal.value.s), std::begin(this->literal.value.s));	
-				break;
-			case NUM:
-				this->literal.value.i = literal.value.i;
-				break;
-			case NOTHING:
-				this->literal.value.i = 0;
-				break;
-		}
+		this->literal = Literal(literal.type, literal.value);	
 		this->line = line;
 	}
 
